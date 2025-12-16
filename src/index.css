@@ -4,3 +4,13 @@
   box-sizing: border-box;
 }
 
+body {
+  background: #000;
+}
+
+pre {
+  font-size: 18px;
+  font-family: monospace;
+  line-height: 10px;
+  color: #fff;
+}
