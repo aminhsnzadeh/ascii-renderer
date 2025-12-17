@@ -96,46 +96,49 @@ const useAscii = (
             img.crossOrigin = 'anonymous'
             img.src = image
 
-            const [width, height] = clampDimensions(img.width, img.height);
+            img.onload = () => {
 
-            canvas.width = width
-            canvas.height = height
+                const [width, height] = clampDimensions(img.width, img.height);
 
-            ctx?.drawImage(img, 0, 0, width, height)
+                canvas.width = width
+                canvas.height = height
 
-            const imgData = ctx?.getImageData(0, 0, width, width)
+                ctx?.drawImage(img, 0, 0, width, height)
 
-            const pixels = []
+                const imgData = ctx?.getImageData(0, 0, width, width)
 
-            if(imgData) {
-                for(let i = 0; i < imgData.data.length; i += 4) {
+                const pixels = []
 
-                    const r = Math.pow(((imgData.data[i + 0] || 255) / 255), gammaCorrection) || 0
-                    const g = Math.pow(((imgData.data[i + 1] || 255) / 255), gammaCorrection) || 0
-                    const b = Math.pow(((imgData.data[i + 2] || 255) / 255), gammaCorrection) || 0
+                if(imgData) {
+                    for(let i = 0; i < imgData.data.length; i += 4) {
 
-                    const pixel = toGrayScale(r, g, b)
-                    imgData.data[i] = imgData.data[i + 1] = imgData.data[i + 2] = pixel
+                        const r = Math.pow(((imgData.data[i + 0] || 255) / 255), gammaCorrection) || 0
+                        const g = Math.pow(((imgData.data[i + 1] || 255) / 255), gammaCorrection) || 0
+                        const b = Math.pow(((imgData.data[i + 2] || 255) / 255), gammaCorrection) || 0
 
-                    pixels.push(pixel)
+                        const pixel = toGrayScale(r, g, b)
+                        imgData.data[i] = imgData.data[i + 1] = imgData.data[i + 2] = pixel
+
+                        pixels.push(pixel)
+                    }
+
+                    ctx?.putImageData(imgData, 0, 0)
+                    const drawAscii = (pixels: number[], width: number) => {
+                        const ascii = pixels.reduce((asciiImage, pixel, index) => {
+                            let nextChars = getCharForPixels(pixel)
+
+                            if ((index + 1) % width === 0) {
+                                nextChars += '\n'
+                            }
+
+                            return asciiImage + nextChars;
+                        }, '')
+
+                        return ascii
+                    }
+
+                    setAscii(drawAscii(pixels, width))
                 }
-
-                ctx?.putImageData(imgData, 0, 0)
-                const drawAscii = (pixels: number[], width: number) => {
-                    const ascii = pixels.reduce((asciiImage, pixel, index) => {
-                        let nextChars = getCharForPixels(pixel)
-
-                        if ((index + 1) % width === 0) {
-                            nextChars += '\n'
-                        }
-
-                        return asciiImage + nextChars;
-                    }, '')
-
-                    return ascii
-                }
-
-                setAscii(drawAscii(pixels, width))
             }
         }
     }, [ascii, image, gammaCorrection, ramp])
