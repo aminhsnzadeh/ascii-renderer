@@ -141,7 +141,7 @@ const useAscii = (
                 }
             }
         }
-    }, [ascii, image, gammaCorrection, ramp])
+    }, [ascii, image, gammaCorrection, ramp, width, height, customRamp])
 
 
     return ascii
