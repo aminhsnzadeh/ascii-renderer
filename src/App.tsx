@@ -1,5 +1,6 @@
 import useAscii from "./useAscii";
 import {useControls} from "leva";
+import useRgbAscii from "./useRgbAscii";
 
 type options = {
     gamma?: number
@@ -9,14 +10,16 @@ type options = {
     height?: number
     invert?: boolean
     extraSpace?: number
+    image?: string
+    scale?: number
 }
 
 function App() {
 
-    const { ramp, invert, customRamp, height, width, extraSpace, gamma }: options = useControls({
+    const { ramp, invert, customRamp, height, width, extraSpace, gamma, image, scale }: options = useControls({
         ramp: {
             options: ["bold", "detailed", "classic", "minimal"],
-            value: "classic"
+            value: "bold"
         },
         invert: false,
         customRamp: "",
@@ -34,12 +37,21 @@ function App() {
             value: 1,
             step: 0.1
         },
+        scale: {
+            min: 0.1,
+            max: 1,
+            value: 1,
+        },
+        image: {
+            image: undefined
+        }
     })
 
-    const ascii = useAscii({
-        image: "/flower.webp",
+    //WARNING : do not use higher resolution for colored ASCII. Process is high it might blow your machine :P
+    const ascii = useRgbAscii({
+        image: image || "/flower.webp",
         ramp,
-        invert,
+        invert: !invert,
         customRamp,
         extraSpace,
         gamma,
@@ -47,9 +59,20 @@ function App() {
         width
     });
 
+    // const ascii = useAscii({
+    //     image: image || "/flower.webp",
+    //     ramp,
+    //     invert: !invert,
+    //     customRamp,
+    //     extraSpace,
+    //     gamma,
+    //     height,
+    //     width
+    // });
+
     return (
         <>
-            <pre>{ascii}</pre>
+            <pre style={{fontSize: `${18 * scale}px`, lineHeight: `${10 * scale}px`}}>{ascii}</pre>
         </>
     )
 }
