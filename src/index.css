@@ -9,8 +9,6 @@ body {
 }
 
 pre {
-  font-size: 18px;
   font-family: monospace;
-  line-height: 10px;
   color: #fff;
 }

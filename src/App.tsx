@@ -9,14 +9,16 @@ type options = {
     height?: number
     invert?: boolean
     extraSpace?: number
+    image?: string
+    scale?: number
 }
 
 function App() {
 
-    const { ramp, invert, customRamp, height, width, extraSpace, gamma }: options = useControls({
+    const { ramp, invert, customRamp, height, width, extraSpace, gamma, image, scale }: options = useControls({
         ramp: {
             options: ["bold", "detailed", "classic", "minimal"],
-            value: "classic"
+            value: "bold"
         },
         invert: false,
         customRamp: "",
@@ -34,12 +36,20 @@ function App() {
             value: 1,
             step: 0.1
         },
+        scale: {
+            min: 0.1,
+            max: 1,
+            value: 1,
+        },
+        image: {
+            image: undefined
+        }
     })
 
     const ascii = useAscii({
-        image: "/flower.webp",
+        image: image || "/flower.webp",
         ramp,
-        invert,
+        invert: !invert,
         customRamp,
         extraSpace,
         gamma,
@@ -49,7 +59,7 @@ function App() {
 
     return (
         <>
-            <pre>{ascii}</pre>
+            <pre style={{fontSize: `${18 * scale}px`, lineHeight: `${10 * scale}px`}}>{ascii}</pre>
         </>
     )
 }
